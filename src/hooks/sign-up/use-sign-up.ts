@@ -1,3 +1,5 @@
+'use client'
+
 import React, {useState} from "react";
 import {toast, useToast} from "@/components/ui/use-toast";
 import {useSignUp} from "@clerk/nextjs";
@@ -5,6 +7,7 @@ import {useRouter} from "next/navigation";
 import {useForm} from "react-hook-form";
 import {UserRegistrationProps, UserRegistrationSchema} from "@/schemas/auth.schema";
 import {zodResolver} from "@hookform/resolvers/zod";
+import {onCompleteUserRegistration} from "@/actions/auth";
 
 export const useSignUpForm = () => {
     const {toast} = useToast();
@@ -89,5 +92,12 @@ export const useSignUpForm = () => {
             }
         }
     )
+    return {
+        methods,
+        loading,
+        onHandleSubmit,
+        onGenerateOTP,
+    }
 }
+
 
