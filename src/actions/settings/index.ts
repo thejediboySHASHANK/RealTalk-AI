@@ -1,6 +1,6 @@
 'use server'
 
-import {currentUser} from "@clerk/nextjs";
+import {clerkClient, currentUser} from "@clerk/nextjs";
 import {client} from "@/lib/prisma";
 
 export const onIntegrateDomain = async (domain: string, icon: string) => {
@@ -142,5 +142,20 @@ export const onGetAllAccountDomains = async () => {
         return { ...domains }
     } catch (error) {
         console.log(error)
+    }
+}
+
+export const onUpdatePassword = async (password: string) => {
+    try {
+        const user = await currentUser()
+
+        if (!user) return null
+        const update = await clerkClient.users.updateUser(user.id, { password })
+        if (update) {
+            return { status: 200, message: 'Password updated' }
+        }
+    } catch (error) {
+        console.log(`ON_UPDATE_PASSWORD_ERROR: ${error}`)
+        return { status: 500, message: 'Internal Server Error' }
     }
 }
