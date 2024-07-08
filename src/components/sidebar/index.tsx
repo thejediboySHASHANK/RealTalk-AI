@@ -2,6 +2,8 @@
 
 import useSidebar from "@/context/use-sidebar";
 import {cn} from "@/lib/utils";
+import MaxMenu from "@/components/sidebar/maximized-menu";
+import {MinMenu} from "@/components/sidebar/minimized-menu";
 
 type Props = {
     domains:

@@ -2,8 +2,8 @@ import { SIDE_BAR_MENU } from '@/constants/menu'
 import { LogOut, Menu, MonitorSmartphone } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
-import DomainMenu from './domain-menu'
-import MenuItem from './menu-item'
+import DomainMenu from "@/components/sidebar/domain-menu";
+import MenuItem from "@/components/sidebar/menu-item";
 
 type Props = {
     onExpand(): void
@@ -34,7 +34,9 @@ const MaxMenu = ({ current, domains, onExpand, onSignOut }: Props) => {
                     }}
                     width={0}
                     height={0}
+                    draggable={false}
                 />
+                {/*<p><span className="text-2xl text-black">RealTalk AI</span></p>*/}
                 <Menu
                     className="cursor-pointer animate-fade-in opacity-0 delay-300 fill-mode-forwards"
                     onClick={onExpand}
