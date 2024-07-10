@@ -6,6 +6,13 @@ import {DomainUpdate} from "@/components/forms/settings/domain-update";
 import CodeSnippet from "@/components/forms/settings/code-snippet";
 import PremiumBadge from "@/icons/premium-badge";
 import EditChatbotIcon from "@/components/forms/settings/edit-chatbot-icon";
+import dynamic from "next/dynamic";
+
+// dynamically importing the component for improving performance
+const WelcomeMessage = dynamic(
+    () => import('./greetings-message').then((props) => props.default),
+    {ssr: false}
+);
 
 type Props = {
     id: string;
@@ -40,14 +47,14 @@ const SettingsForm = ({id, name, plan, chatBot}: Props) => {
                     register={register}
                     errors={errors}
                 />
-                <CodeSnippet id={id} />
+                <CodeSnippet id={id}/>
             </div>
             <div className="flex flex-col hap-3 mt-5">
                 <div className="flex gap-4 items-center">
                     <h2 className="font-bold text-2xl">Chatbot Settings</h2>
                     <div className="flex gap-1 bg-cream rounded-full px-3 py-1
                     text-xs items-center font-bold">
-                        <PremiumBadge />
+                        <PremiumBadge/>
                         Premium
                     </div>
                 </div>
@@ -59,11 +66,11 @@ const SettingsForm = ({id, name, plan, chatBot}: Props) => {
                             register={register}
                             errors={errors}
                         />
-                        {/*<WelcomeMessage*/}
-                        {/*    message={chatBot?.welcomeMessage!}*/}
-                        {/*    register={register}*/}
-                        {/*    errors={errors}*/}
-                        {/*/>*/}
+                        <WelcomeMessage
+                            message={chatBot?.welcomeMessage!}
+                            register={register}
+                            errors={errors}
+                        />
                     </div>
                 </div>
             </div>
