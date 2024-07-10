@@ -2,6 +2,7 @@ import {onGetCurrentDomainInfo} from "@/actions/settings";
 import {redirect} from "next/navigation";
 import InfoBar from "@/components/infobar";
 import SettingsForm from "@/components/forms/settings/form";
+import BotTrainingForm from "@/components/forms/settings/bot-training";
 
 type Props = {
     params: {
@@ -21,6 +22,9 @@ const DomainSettingsPage = async ({params}: Props) => {
                     chatBot={domain.domains[0].chatBot}
                     id={domain.domains[0].id}
                     name={domain.domains[0].name}
+                />
+                <BotTrainingForm
+                    id={domain.domains[0].id}
                 />
             </div>
         </>
