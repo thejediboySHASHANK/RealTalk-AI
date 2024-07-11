@@ -1,3 +1,8 @@
+import {HELP_DESK_TABS_MENU} from "@/constants/menu";
+import {TabsContent} from "@/components/ui/tabs";
+import TabsMenu from "@/components/tabs";
+import HelpDesk from "@/components/forms/settings/help-desk";
+
 type Props = {
     id: string;
 };
@@ -12,6 +17,17 @@ const BotTrainingForm = ({id}: Props) => {
                     train your bot to act the way you want it to.
                 </p>
             </div>
+            <TabsMenu triggers={HELP_DESK_TABS_MENU}>
+                <TabsContent
+                    value="help desk"
+                    className="w-full"
+                >
+                 <HelpDesk id={id}/>
+                </TabsContent>
+                <TabsContent value="questions">
+                    {/*<FilterQuestions id={id} />*/}
+                </TabsContent>
+            </TabsMenu>
         </div>
     );
 };
