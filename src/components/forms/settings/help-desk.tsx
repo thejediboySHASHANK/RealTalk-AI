@@ -7,6 +7,7 @@ import FormGenerator from "@/components/forms/form-generator";
 import {Button} from "@/components/ui/button";
 import {Loader} from "@/components/loader";
 import Accordion from "@/components/accordion";
+import form from "@/components/forms/settings/form";
 
 type Props = {
     id: string;
@@ -20,6 +21,7 @@ const HelpDesk = ({id}: Props) => {
         isQuestions,
         loading
     } = useHelpDesk(id);
+
     return (
         <Card className="w-full grid grid-cols-1 lg:grid-cols-2">
             <CardContent className="p-6 border-r-[1px]">

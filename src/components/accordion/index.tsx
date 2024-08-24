@@ -13,6 +13,7 @@ const Accordion = ({
                        trigger,
                        content,
                    }: Props) => {
+    // WIP: Enable Markdown mode for content so the answers are displayed in newline
     return (
         <ShadcnAccordion
             type="single"

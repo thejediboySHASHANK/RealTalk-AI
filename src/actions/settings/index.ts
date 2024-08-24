@@ -421,3 +421,68 @@ export const onGetAllHelpDeskQuestions = async (id: string) => {
         console.log(error)
     }
 }
+
+export const onCreateFilterQuestions = async (id: string, question: string) => {
+    try {
+        const filterQuestion = await client.domain.update({
+            where: {
+                id,
+            },
+            data: {
+                filterQuestions: {
+                    create: {
+                        question,
+                    },
+                },
+            },
+            include: {
+                filterQuestions: {
+                    select: {
+                        id: true,
+                        question: true,
+                    },
+                },
+            },
+        })
+
+        if (filterQuestion) {
+            return {
+                status: 200,
+                message: 'New filter question added',
+                questions: filterQuestion.filterQuestions,
+            }
+        }
+
+        return {
+            status: 400,
+            message: 'Oops! something went wrong',
+        }
+    } catch (e) {
+        console.log(`CREATE_FILTER_QUESTION_ERROR: ${e}`)
+    }
+}
+
+export const onGetAllFilterQuestions = async (id: string) => {
+    try {
+        const questions = await client.filterQuestions.findMany({
+            where: {
+                domainId: id,
+            },
+            select: {
+                id: true,
+                question: true,
+            },
+            orderBy: {
+                question: 'asc',
+            }
+        })
+
+        return {
+            status: 200,
+            message: 'Filter questions fetched',
+            questions: questions,
+        }
+    } catch (error) {
+        console.log(`GET_ALL_FILTER_QUESTIONS_ERROR: ${error}`)
+    }
+}

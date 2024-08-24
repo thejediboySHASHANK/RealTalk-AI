@@ -48,3 +48,75 @@ export const onGetConversationMode = async (id: string) => {
         return {status: 400, message: `ON_GET_CONVERSATION_MODE ERROR: ${e}`}
     }
 }
+
+export const onGetDomainChatRooms = async (id: string) => {
+    try {
+        const domains = await client.domain.findUnique({
+            where: {
+                id,
+            },
+            select: {
+                customer: {
+                    select: {
+                        email: true,
+                        chatRoom: {
+                            select: {
+                                createdAt: true,
+                                id: true,
+                                message: {
+                                    select: {
+                                        message: true,
+                                        createdAt: true,
+                                        seen: true,
+                                    },
+                                    orderBy: {
+                                        createdAt: 'desc',
+                                    },
+                                    take: 1,
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        })
+
+        if (domains) {
+            return domains
+        }
+    } catch (error) {
+        console.log(`ON_GET_DOMAIN_CHAT_ROOMS ERROR: ${error}`)
+    }
+}
+
+export const onGetChatMessages = async (id: string) => {
+    try {
+        const messages = await client.chatRoom.findMany({
+            where: {
+                id,
+            },
+            select: {
+                id: true,
+                live: true,
+                message: {
+                    select: {
+                        id: true,
+                        role: true,
+                        message: true,
+                        createdAt: true,
+                        seen: true,
+                    },
+                    orderBy: {
+                        createdAt: 'asc',
+                    },
+                },
+            },
+        })
+
+        if (messages) {
+            return messages
+        }
+    } catch (error) {
+        console.log(`ON_GET_CHAT_MESSAGES ERROR: ${error}`)
+    }
+}
