@@ -1,9 +1,15 @@
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {ConversationSearchSchema} from "@/schemas/comversation.schema";
+import {ChatBotMessageSchema, ConversationSearchSchema} from "@/schemas/comversation.schema";
 import {useChatContext} from "@/context/user-chat-context";
-import {useEffect, useState} from "react";
-import {onGetChatMessages, onGetDomainChatRooms} from "@/actions/conversation";
+import {useEffect, useRef, useState} from "react";
+import {
+    onGetChatMessages,
+    onGetDomainChatRooms,
+    onOwnerSendMessage, onRealTimeChat,
+    onViewUnReadMessages
+} from "@/actions/conversation";
+import {getMonthName, pusherClient} from "@/lib/utils";
 
 export const useConversation = () => {
     const {register, watch} = useForm({
@@ -15,7 +21,7 @@ export const useConversation = () => {
         setChats,
         setChatRoom
     } = useChatContext();
-    
+
     const [chatRooms, setChatRooms] = useState<
         {
             chatRoom: {
@@ -68,5 +74,115 @@ export const useConversation = () => {
         chatRooms,
         loading,
         onGetActiveChatMessages,
+    }
+}
+
+export const useChatTime = (createdAt: Date, roomId: string) => {
+    const {chatRoom} = useChatContext();
+    const [messageSentAt, setMessageSentAt] = useState<string>();
+    const [urgent, setUrgent] = useState<boolean>(false);
+
+    const onSetMessageRecievedDate = () => {
+        const dt = new Date(createdAt)
+        const current = new Date()
+        const currentDate = current.getDate()
+        const hr = dt.getHours()
+        const min = dt.getMinutes()
+        const date = dt.getDate()
+        const month = dt.getMonth()
+        const difference = currentDate - date
+
+        if (difference <= 0) {
+            setMessageSentAt(`${hr}:${min}${hr > 12 ? 'PM' : 'AM'}`)
+            if (current.getHours() - dt.getHours() < 2) {
+                setUrgent(true)
+            }
+        } else {
+            setMessageSentAt(`${date} ${getMonthName(month)}`)
+        }
+    }
+
+    const onSeenChat = async () => {
+        if (chatRoom == roomId && urgent) {
+            await onViewUnReadMessages(roomId)
+            setUrgent(false)
+        }
+    }
+
+    useEffect(() => {
+        onSeenChat()
+    }, [chatRoom])
+
+    useEffect(() => {
+        onSetMessageRecievedDate()
+    }, [])
+
+    return {messageSentAt, urgent, onSeenChat}
+}
+
+export const useChatWindow = () => {
+    const {chats, loading, setChats, chatRoom} = useChatContext();
+    const messageWindowRef = useRef<HTMLDivElement | null>(null);
+    const {
+        register,
+        handleSubmit,
+        reset
+    } = useForm({
+        resolver: zodResolver(ChatBotMessageSchema),
+        mode: "onChange",
+    });
+    const onScrollToBottom = () => {
+        messageWindowRef.current?.scrollTo({
+            top: messageWindowRef.current.scrollHeight,
+            left: 0,
+            behavior: "smooth"
+        })
+    }
+
+    useEffect(() => {
+        onScrollToBottom();
+    }, [chats, messageWindowRef])
+
+    // WIP: Setup Pusher
+    // useEffect(() => {
+    //     if (chatRoom) {
+    //         pusherClient.subscribe(chatRoom);
+    //         pusherClient.bind('realtime-mode', (data: any) => {
+    //             setChats((prev) => [...prev, data.chat]);
+    //         });
+    //
+    //         return () => pusherClient.unsubscribe('realtime-mode');
+    //     }
+    // }, [chatRoom])
+
+    const onHandleSendMessage = handleSubmit(async (values) => {
+        try {
+            const message = await onOwnerSendMessage(
+                chatRoom!,
+                values.content,
+                'assistant'
+            )
+            if (message) {
+                setChats((prev) => [...prev, message.message[0]])
+                // WIP: Uncomment this when pusher setup is done
+                // await onRealTimeChat(
+                //     chatRoom!,
+                //     message.message[0].message,
+                //     message.message[0].id,
+                //     'assistant'
+                // )
+            }
+        } catch (e) {
+            console.log(`ON_HANDLE_SEND_MESSAGE ERROR: ${e}`)
+        }
+    })
+
+    return {
+        messageWindowRef,
+        register,
+        onHandleSendMessage,
+        chats,
+        loading,
+        chatRoom,
     }
 }
