@@ -32,6 +32,10 @@ export const pusherClient = {}
 //     }
 // )
 
+export const postToParent = (message: string) => {
+    window.parent.postMessage(message, '*');
+}
+
 export const getMonthName = (month: number) => {
     return month == 1
         ? 'Jan'

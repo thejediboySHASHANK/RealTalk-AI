@@ -143,6 +143,7 @@ export const onRealTimeChat = async (
     id: string,
     role: 'assistant' | 'user'
 ) => {
+    // @ts-ignore
     pusherServer.trigger(chatroomId, 'realtime-mode', {
         chat: {
             message,

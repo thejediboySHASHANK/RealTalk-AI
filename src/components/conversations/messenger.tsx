@@ -3,6 +3,9 @@
 import {useChatWindow} from "@/hooks/conversations/use-conversation";
 import {Loader} from "@/components/loader";
 import Bubble from "@/components/chatbot/bubble";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
+import {PaperclipIcon} from "lucide-react";
 
 type Props = {};
 const Messenger = (props: Props) => {
@@ -15,7 +18,7 @@ const Messenger = (props: Props) => {
         chatRoom,
     } = useChatWindow();
     return (
-        <div className="flex-1 flex flex-col h-0 relative">
+        <div className="flex-1 flex flex-col h-0 relative w-full">
             <div className="flex-1 h-0 w-full flex flex-col">
                 <Loader loading={loading}>
                     <div
@@ -41,8 +44,29 @@ const Messenger = (props: Props) => {
                         )}
                     </div>
                 </Loader>
-
             </div>
+            <form
+                onSubmit={onHandleSendMessage}
+                className="flex px-3 pt-3 pb-10 flex-col backdrop-blur-sm bg-muted w-full"
+            >
+                <div className="flex justify-between">
+                    <Input
+                        {...register('content')}
+                        placeholder="Type your message..."
+                        className="focus-visible:ring-0 flex-1 p-0 focus-visible:ring-offset-0 bg-muted rounded-none outline-none border-none"
+                    />
+                    <Button
+                        type="submit"
+                        className="mt-3 px-7"
+                        disabled={!chatRoom}
+                    >
+                        Send
+                    </Button>
+                </div>
+                <span>
+                    <PaperclipIcon className='text-muted-foreground'/>
+                </span>
+            </form>
         </div>
     );
 };
