@@ -3,7 +3,7 @@ import {ChatBotMessageProps, ChatBotMessageSchema} from "@/schemas/comversation.
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useEffect, useRef, useState} from "react";
 import {postToParent} from "@/lib/utils";
-import {onGetCurrentChatBot} from "@/actions/bot";
+import {onAiChatBotAssistant, onGetCurrentChatBot} from "@/actions/bot";
 import {UploadClient} from "@uploadcare/upload-client";
 
 const upload = new UploadClient({
@@ -103,6 +103,20 @@ export const useChatBot = () => {
         reset();
         if (values.image.length) {
             const uploaded = await upload.uploadFile(values.image[0]);
+            setOnChats((prev: any) => [
+                ...prev,
+                {
+                    role: 'user',
+                    content: uploaded.uuid,
+                },
+            ]);
+            setOnAiTyping(true);
+            const response = await onAiChatBotAssistant(
+                currentBotId!,
+                onChats,
+                'user',
+                uploaded.uuid
+            );
         }
     })
 }
